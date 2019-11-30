@@ -38,6 +38,7 @@ dataOutG = dataOutMatrixG(:);   % Return data in column vector
 fprintf('\nThe Gray coding bit error rate = %5.2e, based on %d errors\n', ...
     berG,numErrorsG)
 
+hold on 
 x = (0:15)';               % Integer input
 y2 = qammod(x,16,'gray');  % 16-QAM output, Gray-coded
 scatterplot(y2)

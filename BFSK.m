@@ -3,31 +3,32 @@ clear
 clc
 close all
 
-M = 16;                     % Size of signal constellation
+M = 2;                     % Size of signal constellation
 k = log2(M);                % Number of bits per symbol
 n = 20000;                  % Number of bits to process
-numSamplesPerSymbol = 1;    % Oversampling factor
-
+freq_sep=10;
+nsamp = 5;    % Oversampling factor
+Fs = 32;      % Sample rate (Hz)
+% dataIn = randi([0 1],n,1);  % Generate vector of binary data
+ 
+% 
+% dataInMatrix = reshape(dataIn,length(dataIn)/k,k);   % Reshape data into binary k-tuples, k = log2(M)
+% dataSymbolsIn = bi2de(dataInMatrix);                 % Convert to integers
 dataIn = randi([0 1],n,1);  % Generate vector of binary data
 % repelem(dataIn,numSamplesPerSymbol)
-
-dataInMatrix = reshape(dataIn,length(dataIn)/k,k);   % Reshape data into binary k-tuples, k = log2(M)
-dataSymbolsIn = bi2de(dataInMatrix);                 % Convert to integers
-
-dataModG = qammod(dataSymbolsIn,M); % Gray coding, phase offset = 0
+dataSymbolsIn = repelem(dataIn,nsamp);
 % The results are complex column vectors whose values are elements of the 16-QAM signal constellation
-
-
+dataMod = fskmod(dataSymbolsIn,M,freq_sep,nsamp,Fs);
 % Calculate the SNR when the channel has an Eb/N0 = 10 dB.
 
 EbNo =10;
-snr = EbNo + 10*log10(k) - 10*log10(numSamplesPerSymbol);
+snr = EbNo + 10*log10(k) - 10*log10(nsamp);
 
-receivedSignalG = awgn(dataModG,snr,'measured');
+receivedSignalG = awgn(dataMod,snr,'measured');
 
 sPlotFig = scatterplot(receivedSignalG,1,0,'g.');
 hold on
-scatterplot(dataModG,1,0,'k*',sPlotFig)
+scatterplot(dataMod,1,0,'k*',sPlotFig)
 
 dataSymbolsOutG = qamdemod(receivedSignalG,M);
 
