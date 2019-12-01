@@ -3,10 +3,10 @@ clear
 clc
 close all
 
-M = 2;                     % Size of signal constellation
+M = 1;                     % Size of signal constellation
 k = log2(M);                % Number of bits per symbol
 n = 20000;                  % Number of bits to process
-freq_sep=10;
+freq_sep=16;
 nsamp = 5;    % Oversampling factor
 Fs = 32;      % Sample rate (Hz)
 
@@ -17,14 +17,14 @@ dataSymbolsIn = repelem(dataIn,nsamp);
 dataMod = fskmod(dataSymbolsIn,M,freq_sep,nsamp,Fs);
 % Calculate the SNR when the channel has an Eb/N0 = 10 dB.
 
-EbNo =10;
+EbNo =20;
 snr = EbNo + 10*log10(k) - 10*log10(nsamp);
 
 receivedSignalG = awgn(dataMod,snr,'measured');
 
-sPlotFig = scatterplot(receivedSignalG,1,0,'g.');
+scatter(real(receivedSignalG),imag(receivedSignalG),'g.');
 hold on
-scatterplot(dataMod,1,0,'k*',sPlotFig)
+scatter(real(dataMod),imag(dataMod),'k*')
 
 dataSymbolsOut=fskdemod(receivedSignalG,M,freq_sep,nsamp,Fs);
 dataOutMatrixG = de2bi(dataSymbolsOut,k);
